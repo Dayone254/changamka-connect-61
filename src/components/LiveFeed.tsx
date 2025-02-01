@@ -54,9 +54,12 @@ const recentStories: Story[] = [
 
 interface LiveFeedProps {
   category?: string | null;
+  searchTerm?: string;
+  tags?: string[];
+  sortBy?: string;
 }
 
-export const LiveFeed = ({ category }: LiveFeedProps) => {
+export const LiveFeed = ({ category, searchTerm = "", tags = [], sortBy = "recent" }: LiveFeedProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedStories, setExpandedStories] = useState<string[]>([]);
 
@@ -68,11 +71,42 @@ export const LiveFeed = ({ category }: LiveFeedProps) => {
     );
   };
 
-  const filteredStories = category
-    ? recentStories.filter(story => 
-        story.category.toLowerCase() === category.toLowerCase()
-      )
-    : recentStories;
+  const filteredStories = recentStories
+    .filter(story => {
+      // Category filter
+      if (category && story.category.toLowerCase() !== category.toLowerCase()) {
+        return false;
+      }
+      
+      // Search term filter
+      if (searchTerm && !story.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !story.content.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+
+      // Tags filter (assuming stories would have tags in a real implementation)
+      if (tags.length > 0) {
+        // This is a simplified example. In a real app, you'd have tags in your story data
+        const storyTags = [story.category]; // Using category as a tag for this example
+        return tags.some(tag => storyTags.includes(tag));
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "recent":
+          return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+        case "popular":
+          // In a real app, you'd have a popularity metric
+          return 0;
+        case "featured":
+          // In a real app, you'd have a featured flag
+          return 0;
+        default:
+          return 0;
+      }
+    });
 
   return (
     <section className="py-16 bg-background">
@@ -145,4 +179,3 @@ export const LiveFeed = ({ category }: LiveFeedProps) => {
       </div>
     </section>
   );
-};
