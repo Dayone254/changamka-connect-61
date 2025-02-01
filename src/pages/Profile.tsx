@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingPortfolio, setIsEditingPortfolio] = useState(false);
   const [isEditingAchievements, setIsEditingAchievements] = useState(false);
@@ -129,15 +131,23 @@ const Profile = () => {
           <div className="flex justify-between items-start mb-6">
             <div className="flex-1">
               {!isEditing ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="float-right"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <Pencil className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </Button>
+                <div className="float-right space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <Pencil className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => navigate("/edit-story")}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Share Story
+                  </Button>
+                </div>
               ) : (
                 <div className="float-right space-x-2">
                   <Button
