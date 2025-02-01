@@ -12,6 +12,7 @@ import Community from "./pages/Community";
 import Resources from "./pages/Resources";
 import ContactUs from "./pages/ContactUs";
 import NotFound from "./pages/NotFound";
+import EditStory from "./pages/EditStory";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/community" element={<Community />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/edit-story" element={<EditStory />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

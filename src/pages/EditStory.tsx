@@ -1,137 +1,116 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { ImagePlus, Send } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
-interface StoryFormValues {
-  title: string;
-  content: string;
-  image?: string;
-}
-
-export const EditStory = () => {
-  const { toast } = useToast();
+const EditStory = () => {
+  const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
+  const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const form = useForm<StoryFormValues>({
-    defaultValues: {
-      title: "",
-      content: "",
-    },
-  });
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
+      setImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
-        form.setValue("image", reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const onSubmit = (data: StoryFormValues) => {
-    console.log("Story submitted:", data);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Here you would typically send the data to your backend
+    // For now, we'll just show a success message
     toast({
       title: "Story shared successfully!",
-      description: "Your story has been shared with the community.",
+      description: "Your story has been published.",
     });
-    form.reset();
-    setImagePreview(null);
+    
+    navigate("/stories");
   };
 
   return (
-    <div className="container max-w-2xl py-8">
-      <Card>
-        <CardContent className="pt-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="What's your story about?" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <Card className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <Input
+              placeholder="Story title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="text-lg font-semibold"
+            />
+          </div>
+          
+          <div>
+            <Textarea
+              placeholder="What's your story?"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="min-h-[200px] resize-none"
+            />
+          </div>
 
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Content</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Share your story with the community..."
-                        className="min-h-[200px]"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => document.getElementById("image-upload")?.click()}
-                  >
-                    <ImagePlus className="w-4 h-4 mr-2" />
-                    Add Image
-                  </Button>
-                  <input
-                    type="file"
-                    id="image-upload"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageUpload}
-                  />
-                </div>
-
-                {imagePreview && (
-                  <div className="relative">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={() => {
-                        setImagePreview(null);
-                        form.setValue("image", undefined);
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              <Button type="submit" className="w-full">
-                <Send className="w-4 h-4 mr-2" />
-                Share Story
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="w-full"
+                onClick={() => document.getElementById("image-upload")?.click()}
+              >
+                <ImagePlus className="h-4 w-4 mr-2" />
+                Add Image
               </Button>
-            </form>
-          </Form>
-        </CardContent>
+              <input
+                type="file"
+                id="image-upload"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            </div>
+            
+            {imagePreview && (
+              <div className="relative">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-48 object-cover rounded-md"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={() => {
+                    setImage(null);
+                    setImagePreview(null);
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <Button type="submit" className="w-full" disabled={!content.trim()}>
+            <Send className="h-4 w-4 mr-2" />
+            Share Story
+          </Button>
+        </form>
       </Card>
     </div>
   );
