@@ -4,6 +4,7 @@ import { Textarea } from "./ui/textarea";
 import { MessageSquare, PlusCircle } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { Separator } from "./ui/separator";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface Comment {
   id: string;
@@ -56,22 +57,24 @@ const CommentSection = ({ threadId, comments: initialComments }: CommentSectionP
 
       <Separator className="my-4" />
 
-      <div className="space-y-6">
-        {comments.map((comment) => (
-          <div
-            key={comment.id}
-            className="group rounded-lg bg-accent/5 p-4 transition-all duration-200 hover:bg-accent/10"
-          >
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-medium text-primary">{comment.author}</span>
-              <span className="text-sm text-muted-foreground">
-                {new Date(comment.timestamp).toLocaleDateString()}
-              </span>
+      <ScrollArea className="h-[400px] pr-4">
+        <div className="space-y-6">
+          {comments.map((comment) => (
+            <div
+              key={comment.id}
+              className="group rounded-lg bg-accent/5 p-4 transition-all duration-200 hover:bg-accent/10"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-medium text-primary">{comment.author}</span>
+                <span className="text-sm text-muted-foreground">
+                  {new Date(comment.timestamp).toLocaleDateString()}
+                </span>
+              </div>
+              <p className="text-sm leading-relaxed text-foreground/90">{comment.content}</p>
             </div>
-            <p className="text-sm leading-relaxed text-foreground/90">{comment.content}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </ScrollArea>
 
       <div className="space-y-4 pt-4">
         <Textarea
