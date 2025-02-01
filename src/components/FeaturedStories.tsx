@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Facebook, Instagram, Twitter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 const stories = [
   {
@@ -29,6 +31,7 @@ const stories = [
 
 export const FeaturedStories = () => {
   const [expandedStories, setExpandedStories] = useState<string[]>([]);
+  const { toast } = useToast();
 
   const toggleStory = (title: string) => {
     setExpandedStories(prev => 
@@ -36,6 +39,32 @@ export const FeaturedStories = () => {
         ? prev.filter(storyTitle => storyTitle !== title)
         : [...prev, title]
     );
+  };
+
+  const shareToSocialMedia = (platform: string, story: { title: string; content: string }) => {
+    const url = window.location.href;
+    let shareUrl = "";
+
+    switch (platform) {
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(story.title)}`;
+        break;
+      case "twitter":
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(story.title)}`;
+        break;
+      case "instagram":
+        // Instagram doesn't support direct sharing via URL, so we'll copy to clipboard
+        navigator.clipboard.writeText(`${story.title}\n\n${story.content}\n\nRead more at: ${url}`);
+        toast({
+          title: "Content copied!",
+          description: "You can now paste this into your Instagram post.",
+        });
+        return;
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, "_blank", "width=600,height=400");
+    }
   };
 
   return (
@@ -78,6 +107,32 @@ export const FeaturedStories = () => {
                       </>
                     )}
                   </button>
+                </div>
+                <div className="flex gap-2 mt-4 justify-end">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => shareToSocialMedia("facebook", story)}
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    <Facebook className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => shareToSocialMedia("twitter", story)}
+                    className="hover:text-sky-500 transition-colors"
+                  >
+                    <Twitter className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => shareToSocialMedia("instagram", story)}
+                    className="hover:text-pink-600 transition-colors"
+                  >
+                    <Instagram className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
