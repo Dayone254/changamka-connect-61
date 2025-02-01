@@ -8,7 +8,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { Home, BookOpen, Users, HeartHandshake, BookMarked, Mail } from "lucide-react";
+import { Home, BookOpen, Users, HeartHandshake, BookMarked, Mail, User } from "lucide-react";
 
 const NavigationBar = () => {
   return (
@@ -77,6 +77,18 @@ const NavigationBar = () => {
                   )}
                 >
                   <Mail className="mr-2 h-4 w-4" /> Contact
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <Link to="/profile">
+                <NavigationMenuLink 
+                  className={cn(
+                    "group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-[#F97316] hover:text-white focus:bg-[#F97316] focus:text-white focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-[#F97316]/50 data-[state=open]:bg-[#F97316]/50"
+                  )}
+                >
+                  <User className="mr-2 h-4 w-4" /> Profile
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
