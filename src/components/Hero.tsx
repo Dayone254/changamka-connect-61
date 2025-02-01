@@ -22,7 +22,7 @@ export const Hero = () => {
           <Button 
             size="lg" 
             className="bg-primary hover:bg-primary/90"
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate("/edit-story")}
           >
             Share Your Story
             <ArrowRight className="ml-2 h-4 w-4" />
