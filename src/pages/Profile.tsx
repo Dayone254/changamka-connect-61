@@ -119,10 +119,10 @@ const Profile = () => {
   const removeAchievement = (index: number) => {
     setProfile((prev) => ({
       ...prev,
-      achievements: prev.achievements.filter((_, i) => i !== index),
+      achievements: prev.achievements.filter((_, i) => i !== index)
     }));
     console.log("Achievement removed at index:", index);
-  });
+  };
 
   const userProgress = getUserProgress();
   
