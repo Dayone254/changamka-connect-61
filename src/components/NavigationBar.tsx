@@ -16,7 +16,7 @@ const NavigationBar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <HeartHandshake className="h-6 w-6 text-[#1A1F2C]" />
-          <span className="font-bold text-xl text-[#1A1F2C]">AfriConnect</span>
+          <span className="font-bold text-xl text-[#1A1F2C]">Changamka</span>
         </Link>
 
         <NavigationMenu>
