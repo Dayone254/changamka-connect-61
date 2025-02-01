@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Globe, Link2, Award, BadgeCheck, Pencil, Save, X } from "lucide-react";
+import { Globe, Link2, Award, BadgeCheck, Pencil, Save, X, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingPortfolio, setIsEditingPortfolio] = useState(false);
+  const [isEditingAchievements, setIsEditingAchievements] = useState(false);
   
   // This would typically come from an API/database
   const [profile, setProfile] = useState({
@@ -53,6 +55,20 @@ const Profile = () => {
     },
   });
 
+  const portfolioForm = useForm({
+    defaultValues: {
+      newProjectTitle: "",
+      newProjectDescription: "",
+      newProjectDate: "",
+    },
+  });
+
+  const achievementForm = useForm({
+    defaultValues: {
+      newAchievementTitle: "",
+    },
+  });
+
   const onSubmit = (data: any) => {
     setProfile((prev) => ({
       ...prev,
@@ -60,6 +76,49 @@ const Profile = () => {
     }));
     setIsEditing(false);
     console.log("Profile updated:", data);
+  };
+
+  const addProject = (data: any) => {
+    const newProject = {
+      title: data.newProjectTitle,
+      description: data.newProjectDescription,
+      date: data.newProjectDate,
+    };
+    setProfile((prev) => ({
+      ...prev,
+      projects: [...prev.projects, newProject],
+    }));
+    portfolioForm.reset();
+    console.log("Project added:", newProject);
+  };
+
+  const removeProject = (index: number) => {
+    setProfile((prev) => ({
+      ...prev,
+      projects: prev.projects.filter((_, i) => i !== index),
+    }));
+    console.log("Project removed at index:", index);
+  };
+
+  const addAchievement = (data: any) => {
+    const newAchievement = {
+      title: data.newAchievementTitle,
+      icon: BadgeCheck, // Default icon
+    };
+    setProfile((prev) => ({
+      ...prev,
+      achievements: [...prev.achievements, newAchievement],
+    }));
+    achievementForm.reset();
+    console.log("Achievement added:", newAchievement);
+  };
+
+  const removeAchievement = (index: number) => {
+    setProfile((prev) => ({
+      ...prev,
+      achievements: prev.achievements.filter((_, i) => i !== index),
+    }));
+    console.log("Achievement removed at index:", index);
   };
 
   return (
@@ -217,16 +276,89 @@ const Profile = () => {
 
       {/* Portfolio Section */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Portfolio</CardTitle>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsEditingPortfolio(!isEditingPortfolio)}
+          >
+            {isEditingPortfolio ? (
+              <>
+                <X className="w-4 h-4 mr-2" />
+                Done
+              </>
+            ) : (
+              <>
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit Portfolio
+              </>
+            )}
+          </Button>
         </CardHeader>
         <CardContent>
+          {isEditingPortfolio && (
+            <Form {...portfolioForm}>
+              <form onSubmit={portfolioForm.handleSubmit(addProject)} className="space-y-4 mb-4">
+                <FormField
+                  control={portfolioForm.control}
+                  name="newProjectTitle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project Title</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter project title" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={portfolioForm.control}
+                  name="newProjectDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} placeholder="Enter project description" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={portfolioForm.control}
+                  name="newProjectDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Date</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter project date" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Project
+                </Button>
+              </form>
+            </Form>
+          )}
           <div className="grid gap-4">
-            {profile.projects.map((project) => (
+            {profile.projects.map((project, index) => (
               <div
-                key={project.title}
-                className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                key={index}
+                className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors relative"
               >
+                {isEditingPortfolio && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2"
+                    onClick={() => removeProject(index)}
+                  >
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                  </Button>
+                )}
                 <h3 className="font-semibold">{project.title}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   {project.description}
@@ -242,20 +374,70 @@ const Profile = () => {
 
       {/* Achievements Section */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Achievements</CardTitle>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsEditingAchievements(!isEditingAchievements)}
+          >
+            {isEditingAchievements ? (
+              <>
+                <X className="w-4 h-4 mr-2" />
+                Done
+              </>
+            ) : (
+              <>
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit Achievements
+              </>
+            )}
+          </Button>
         </CardHeader>
         <CardContent>
+          {isEditingAchievements && (
+            <Form {...achievementForm}>
+              <form onSubmit={achievementForm.handleSubmit(addAchievement)} className="space-y-4 mb-4">
+                <FormField
+                  control={achievementForm.control}
+                  name="newAchievementTitle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Achievement Title</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter achievement title" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Achievement
+                </Button>
+              </form>
+            </Form>
+          )}
           <div className="flex flex-wrap gap-3">
-            {profile.achievements.map((achievement) => (
-              <Badge
-                key={achievement.title}
-                variant="secondary"
-                className="flex items-center gap-1 px-3 py-1"
-              >
-                <achievement.icon className="w-4 h-4" />
-                {achievement.title}
-              </Badge>
+            {profile.achievements.map((achievement, index) => (
+              <div key={index} className="relative">
+                <Badge
+                  variant="secondary"
+                  className="flex items-center gap-1 px-3 py-1"
+                >
+                  <achievement.icon className="w-4 h-4" />
+                  {achievement.title}
+                </Badge>
+                {isEditingAchievements && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute -top-2 -right-2 h-4 w-4"
+                    onClick={() => removeAchievement(index)}
+                  >
+                    <X className="w-3 h-3 text-destructive" />
+                  </Button>
+                )}
+              </div>
             ))}
           </div>
         </CardContent>
