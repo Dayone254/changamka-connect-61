@@ -1,7 +1,10 @@
 import { Info, Users, Heart, Handshake, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -81,7 +84,11 @@ const About = () => {
               Be part of a community that's shaping the future of Kenya through storytelling and
               collaboration.
             </p>
-            <Button size="lg" className="animate-fade-up">
+            <Button 
+              size="lg" 
+              className="animate-fade-up"
+              onClick={() => navigate("/profile")}
+            >
               Share Your Story Today
             </Button>
           </div>
