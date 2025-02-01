@@ -52,7 +52,11 @@ const recentStories: Story[] = [
   },
 ];
 
-export const LiveFeed = () => {
+interface LiveFeedProps {
+  category?: string | null;
+}
+
+export const LiveFeed = ({ category }: LiveFeedProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedStories, setExpandedStories] = useState<string[]>([]);
 
@@ -63,6 +67,12 @@ export const LiveFeed = () => {
         : [...prev, id]
     );
   };
+
+  const filteredStories = category
+    ? recentStories.filter(story => 
+        story.category.toLowerCase() === category.toLowerCase()
+      )
+    : recentStories;
 
   return (
     <section className="py-16 bg-background">
@@ -85,7 +95,7 @@ export const LiveFeed = () => {
           </button>
         </div>
         <div className="grid grid-cols-1 gap-4 max-h-[800px] overflow-hidden transition-all duration-300">
-          {recentStories.slice(0, isExpanded ? undefined : 2).map((story) => (
+          {filteredStories.slice(0, isExpanded ? undefined : 2).map((story) => (
             <Card key={story.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row gap-6">
