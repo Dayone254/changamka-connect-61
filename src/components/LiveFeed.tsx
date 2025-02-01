@@ -179,3 +179,4 @@ export const LiveFeed = ({ category, searchTerm = "", tags = [], sortBy = "recen
       </div>
     </section>
   );
+};
