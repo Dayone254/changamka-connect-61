@@ -7,6 +7,19 @@ import { ImagePlus, Send } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// This would typically come from a database
+const STORAGE_KEY = 'user_stories';
+
+interface Story {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  date: string;
+  category: string;
+  image: string;
+}
+
 const EditStory = () => {
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
@@ -30,8 +43,36 @@ const EditStory = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Here you would typically send the data to your backend
-    // For now, we'll just show a success message
+    if (!title.trim() || !content.trim() || !imagePreview) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all fields and add an image.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create new story object
+    const newStory: Story = {
+      id: Date.now().toString(),
+      title: title.trim(),
+      content: content.trim(),
+      author: "Anonymous", // In a real app, this would come from user authentication
+      date: new Date().toISOString(),
+      category: "General", // This could be made selectable in a future update
+      image: imagePreview,
+    };
+
+    // Get existing stories from localStorage
+    const existingStoriesJSON = localStorage.getItem(STORAGE_KEY);
+    const existingStories: Story[] = existingStoriesJSON ? JSON.parse(existingStoriesJSON) : [];
+
+    // Add new story to the beginning of the array
+    const updatedStories = [newStory, ...existingStories];
+
+    // Save to localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedStories));
+
     toast({
       title: "Story shared successfully!",
       description: "Your story has been published.",
@@ -106,7 +147,7 @@ const EditStory = () => {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={!content.trim()}>
+          <Button type="submit" className="w-full" disabled={!content.trim() || !title.trim() || !imagePreview}>
             <Send className="h-4 w-4 mr-2" />
             Share Story
           </Button>
