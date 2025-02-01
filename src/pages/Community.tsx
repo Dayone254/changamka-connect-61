@@ -1,39 +1,16 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { MessageCircle, Group, Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
+import ForumThread from "@/components/ForumThread";
 
-interface ForumThread {
-  id: string;
-  title: string;
-  author: string;
-  replies: number;
-  lastActivity: string;
-  category: string;
-}
-
-interface Group {
-  id: string;
-  name: string;
-  description: string;
-  members: number;
-  category: string;
-}
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  type: string;
-  description: string;
-}
-
-const sampleThreads: ForumThread[] = [
+const sampleThreads = [
   {
     id: "1",
     title: "Tips for Starting Your Creative Journey",
     author: "Sarah Johnson",
+    content: "Starting your creative journey can be daunting, but here are some tips that helped me...",
     replies: 15,
     lastActivity: "2024-03-20",
     category: "Career Development"
@@ -42,6 +19,7 @@ const sampleThreads: ForumThread[] = [
     id: "2",
     title: "Collaboration Opportunities in Tech",
     author: "Michael Chen",
+    content: "Looking for developers interested in working on an open-source project...",
     replies: 23,
     lastActivity: "2024-03-19",
     category: "Technology"
@@ -50,13 +28,14 @@ const sampleThreads: ForumThread[] = [
     id: "3",
     title: "Writing Workshop Discussion",
     author: "Emma Williams",
+    content: "Let's share our experiences from the recent writing workshop...",
     replies: 8,
     lastActivity: "2024-03-18",
     category: "Writing"
   }
 ];
 
-const sampleGroups: Group[] = [
+const sampleGroups = [
   {
     id: "1",
     name: "Tech Enthusiasts",
@@ -80,7 +59,7 @@ const sampleGroups: Group[] = [
   }
 ];
 
-const sampleEvents: Event[] = [
+const sampleEvents = [
   {
     id: "1",
     title: "Web Development Workshop",
@@ -131,23 +110,8 @@ const Community = () => {
           <TabsContent value="forums">
             <div className="grid gap-6">
               {sampleThreads.map((thread) => (
-                <Card key={thread.id}>
-                  <CardHeader>
-                    <CardTitle className="text-xl">{thread.title}</CardTitle>
-                    <CardDescription>
-                      Posted by {thread.author} • {new Date(thread.lastActivity).toLocaleDateString()}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between items-center">
-                      <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
-                        {thread.category}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {thread.replies} replies
-                      </span>
-                    </div>
-                  </CardContent>
+                <Card key={thread.id} className="p-0">
+                  <ForumThread thread={thread} />
                 </Card>
               ))}
             </div>
