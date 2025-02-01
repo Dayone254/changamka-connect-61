@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useNavigate } from "react-router-dom";
+import { getUserProgress, achievements } from "@/utils/gamification";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -121,8 +122,10 @@ const Profile = () => {
       achievements: prev.achievements.filter((_, i) => i !== index),
     }));
     console.log("Achievement removed at index:", index);
-  };
+  });
 
+  const userProgress = getUserProgress();
+  
   return (
     <div className="container py-8 space-y-8">
       {/* Profile Header */}
@@ -279,6 +282,53 @@ const Profile = () => {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Gamification Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Progress & Achievements</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold">Level {userProgress.level}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {userProgress.points} points earned
+                </p>
+              </div>
+              <Progress
+                value={(userProgress.points % 100)}
+                className="w-[60%]"
+              />
+            </div>
+            
+            <div className="grid gap-4">
+              {achievements.map((achievement) => {
+                const isUnlocked = userProgress.achievements.includes(achievement.id);
+                return (
+                  <div
+                    key={achievement.id}
+                    className={`p-4 rounded-lg border ${
+                      isUnlocked ? 'bg-primary/10' : 'bg-muted'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Badge variant={isUnlocked ? 'default' : 'outline'}>
+                        {achievement.points} pts
+                      </Badge>
+                      <h4 className="font-semibold">{achievement.title}</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {achievement.description}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </CardContent>

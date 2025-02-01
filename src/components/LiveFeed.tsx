@@ -1,56 +1,22 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowUp, ArrowDown, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { saveForOffline } from "@/utils/offlineStorage";
+import { updateUserProgress } from "@/utils/gamification";
+import { Button } from "./ui/button";
+import { Download } from "lucide-react";
+import { useToast } from "./ui/use-toast";
+import { Card, CardContent } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { formatDistanceToNow } from "date-fns";
 
-type Story = {
+interface Story {
   id: string;
   title: string;
-  author: string;
-  timestamp: string;
-  category: string;
   content: string;
+  author: string;
+  date: string;
+  category: string;
   image: string;
-};
-
-const recentStories: Story[] = [
-  {
-    id: "1",
-    title: "Building a Solar-Powered Irrigation System",
-    author: "John Kamau",
-    timestamp: "2 minutes ago",
-    category: "Agriculture",
-    content: "In the heart of rural Kenya, our community came together to implement a solar-powered irrigation system that has transformed local farming practices. This innovative solution not only helps conserve water but also provides sustainable energy for our agricultural needs. The project began when we noticed the increasing challenges faced by local farmers due to irregular rainfall patterns. Through collaborative efforts and technical expertise from local engineers, we designed and installed solar panels that power water pumps, ensuring consistent irrigation throughout the year. This has led to improved crop yields and created new opportunities for year-round farming.",
-    image: "https://images.unsplash.com/photo-1517022812141-23620dba5c23"
-  },
-  {
-    id: "2",
-    title: "My Journey as a Digital Artist",
-    author: "Grace Muthoni",
-    timestamp: "15 minutes ago",
-    category: "Art",
-    content: "My path as a digital artist began in a small cyber café in Nairobi, where I first discovered the power of digital creation. Starting with basic design software, I taught myself the fundamentals of digital art, drawing inspiration from our rich cultural heritage and contemporary African life. Over the years, I've developed a unique style that blends traditional African artistry with modern digital techniques. This journey hasn't been without challenges, but each obstacle has helped shape my artistic voice. Today, I create artwork that celebrates our stories, traditions, and the vibrant spirit of Africa.",
-    image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901"
-  },
-  {
-    id: "3",
-    title: "Starting a Community Library",
-    author: "Peter Omondi",
-    timestamp: "45 minutes ago",
-    category: "Education",
-    content: "The idea of starting a community library came from seeing children in our neighborhood hungry for knowledge but lacking access to books. What began as a small collection of donated books in my living room has grown into a thriving community space. We now have over 1,000 books, a dedicated reading area, and regular reading programs for children. The library has become more than just a place to borrow books; it's a hub for learning, sharing stories, and building community connections. Local volunteers help manage the library, and we've seen a remarkable improvement in children's reading habits and academic performance.",
-    image: "https://images.unsplash.com/photo-1466721591366-2d5fba72006d"
-  },
-  {
-    id: "4",
-    title: "Developing Mobile Apps for Local Businesses",
-    author: "Sarah Njeri",
-    timestamp: "1 hour ago",
-    category: "Technology",
-    content: "As a software developer in Tanzania, I recognized the need for affordable, locally-developed mobile solutions for small businesses. Many local entrepreneurs struggled with digital transformation due to the high costs of existing solutions. I started developing custom mobile applications that address specific needs of local businesses, from inventory management to customer relationship systems. The journey has been rewarding, seeing how technology can empower local entrepreneurs and help their businesses grow. Through collaboration with local business owners, we've created solutions that are both effective and culturally relevant.",
-    image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625"
-  },
-];
+}
 
 interface LiveFeedProps {
   category?: string | null;
@@ -59,124 +25,95 @@ interface LiveFeedProps {
   sortBy?: string;
 }
 
-export const LiveFeed = ({ category, searchTerm = "", tags = [], sortBy = "recent" }: LiveFeedProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [expandedStories, setExpandedStories] = useState<string[]>([]);
+export const LiveFeed = ({ category, searchTerm, tags, sortBy }: LiveFeedProps) => {
+  const { toast } = useToast();
 
-  const toggleStory = (id: string) => {
-    setExpandedStories(prev => 
-      prev.includes(id) 
-        ? prev.filter(storyId => storyId !== id)
-        : [...prev, id]
+  // Get stories from localStorage
+  const stories: Story[] = JSON.parse(localStorage.getItem('user_stories') || '[]');
+
+  // Filter stories based on category, search term, and tags
+  const filteredStories = stories.filter(story => {
+    const matchesCategory = !category || story.category.toLowerCase() === category.toLowerCase();
+    const matchesSearch = !searchTerm || 
+      story.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      story.content.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesTags = !tags?.length || tags.some(tag => 
+      story.content.toLowerCase().includes(tag.toLowerCase())
     );
+    
+    return matchesCategory && matchesSearch && matchesTags;
+  });
+
+  // Sort stories based on sortBy parameter
+  const sortedStories = [...filteredStories].sort((a, b) => {
+    if (sortBy === 'recent') {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+    // Add other sorting methods as needed
+    return 0;
+  });
+
+  const handleSaveOffline = (story: Story) => {
+    if (saveForOffline(story)) {
+      updateUserProgress('offline_reader');
+      toast({
+        title: "Story saved for offline reading",
+        description: "You can access this story even without internet connection",
+      });
+    }
   };
 
-  const filteredStories = recentStories
-    .filter(story => {
-      // Category filter
-      if (category && story.category.toLowerCase() !== category.toLowerCase()) {
-        return false;
-      }
-      
-      // Search term filter
-      if (searchTerm && !story.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !story.content.toLowerCase().includes(searchTerm.toLowerCase())) {
-        return false;
-      }
-
-      // Tags filter (assuming stories would have tags in a real implementation)
-      if (tags.length > 0) {
-        // This is a simplified example. In a real app, you'd have tags in your story data
-        const storyTags = [story.category]; // Using category as a tag for this example
-        return tags.some(tag => storyTags.includes(tag));
-      }
-
-      return true;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "recent":
-          return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-        case "popular":
-          // In a real app, you'd have a popularity metric
-          return 0;
-        case "featured":
-          // In a real app, you'd have a featured flag
-          return 0;
-        default:
-          return 0;
-      }
-    });
-
   return (
-    <section className="py-16 bg-background">
-      <div className="container">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold">Latest Stories</h2>
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-          >
-            {isExpanded ? (
-              <>
-                Show Less <ArrowUp className="h-4 w-4" />
-              </>
-            ) : (
-              <>
-                Show More <ArrowDown className="h-4 w-4" />
-              </>
-            )}
-          </button>
-        </div>
-        <div className="grid grid-cols-1 gap-4 max-h-[800px] overflow-hidden transition-all duration-300">
-          {filteredStories.slice(0, isExpanded ? undefined : 2).map((story) => (
-            <Card key={story.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row gap-6">
-                  <img 
-                    src={story.image} 
-                    alt={story.title} 
-                    className="w-full md:w-48 h-48 object-cover rounded-lg"
+    <div className="space-y-6">
+      {sortedStories.map((story) => (
+        <Card key={story.id} className="relative overflow-hidden">
+          <CardContent className="p-6">
+            <div className="flex gap-6">
+              {story.image && (
+                <div className="relative w-[200px] h-[200px] flex-shrink-0">
+                  <img
+                    src={story.image}
+                    alt={story.title}
+                    className="absolute inset-0 w-full h-full object-cover rounded-md"
                   />
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold text-lg mb-2">{story.title}</h3>
-                        <p className="text-sm text-foreground/60">By {story.author}</p>
-                      </div>
-                      <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
-                        {story.category}
-                      </span>
-                    </div>
-                    <ScrollArea className={`mt-4 ${expandedStories.includes(story.id) ? 'h-[300px]' : 'h-auto'}`}>
-                      <p className={`text-muted-foreground ${expandedStories.includes(story.id) ? '' : 'line-clamp-2'}`}>
-                        {story.content}
-                      </p>
-                    </ScrollArea>
-                    <div className="flex justify-between items-center mt-4">
-                      <p className="text-sm text-foreground/60">{story.timestamp}</p>
-                      <button
-                        onClick={() => toggleStory(story.id)}
-                        className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm"
-                      >
-                        {expandedStories.includes(story.id) ? (
-                          <>
-                            Read Less <ChevronUp className="h-4 w-4" />
-                          </>
-                        ) : (
-                          <>
-                            Read More <ChevronDown className="h-4 w-4" />
-                          </>
-                        )}
-                      </button>
-                    </div>
+                </div>
+              )}
+              <div className="flex-1 space-y-4">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold">{story.title}</h2>
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${story.author}`} />
+                      <AvatarFallback>{story.author[0]}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm text-muted-foreground">
+                      {story.author} • {formatDistanceToNow(new Date(story.date), { addSuffix: true })}
+                    </span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+                <p className="text-muted-foreground line-clamp-3">{story.content}</p>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">{story.category}</Badge>
+                </div>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="absolute top-4 right-4"
+              onClick={() => handleSaveOffline(story)}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Save Offline
+            </Button>
+          </CardContent>
+        </Card>
+      ))}
+      {sortedStories.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground">
+          No stories found. Be the first to share your story!
         </div>
-      </div>
-    </section>
+      )}
+    </div>
   );
 };
