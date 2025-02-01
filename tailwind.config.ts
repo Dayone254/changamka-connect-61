@@ -20,15 +20,15 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#9b87f5",
+          DEFAULT: "#F97316", // Warm African orange
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#FF7F50",
+          DEFAULT: "#8B4513", // Rich earth brown
           foreground: "hsl(var(--secondary-foreground))",
         },
         accent: {
-          DEFAULT: "#4CAF50",
+          DEFAULT: "#FFB347", // Soft mango accent
           foreground: "hsl(var(--accent-foreground))",
         },
         background: "hsl(var(--background))",
