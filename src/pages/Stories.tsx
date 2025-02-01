@@ -23,7 +23,7 @@ const sampleStories: Story[] = [
     author: "Sarah Johnson",
     date: "2024-02-01",
     category: "Technology",
-    image: "https://source.unsplash.com/random/800x600/?technology"
+    image: "https://images.unsplash.com/photo-1517022812141-23620dba5c23"
   },
   {
     id: "2",
@@ -32,7 +32,7 @@ const sampleStories: Story[] = [
     author: "Michael Chen",
     date: "2024-01-30",
     category: "Community",
-    image: "https://source.unsplash.com/random/800x600/?community"
+    image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901"
   },
   {
     id: "3",
@@ -41,7 +41,7 @@ const sampleStories: Story[] = [
     author: "Emma Williams",
     date: "2024-01-28",
     category: "Lifestyle",
-    image: "https://source.unsplash.com/random/800x600/?sustainable"
+    image: "https://images.unsplash.com/photo-1466721591366-2d5fba72006d"
   }
 ];
 
