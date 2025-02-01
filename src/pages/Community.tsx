@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { MessageCircle, Group, Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
