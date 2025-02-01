@@ -8,6 +8,7 @@ import About from "./pages/About";
 import Profile from "./pages/Profile";
 import Stories from "./pages/Stories";
 import Community from "./pages/Community";
+import Resources from "./pages/Resources";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/stories" element={<Stories />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/resources" element={<Resources />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
