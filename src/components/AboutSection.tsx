@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export const AboutSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-16 bg-primary/5">
       <div className="container">
@@ -11,7 +14,7 @@ export const AboutSection = () => {
             storytelling, connection, and collaboration. We believe every young person has a unique
             story worth sharing and a dream worth pursuing.
           </p>
-          <Button variant="outline" size="lg">
+          <Button variant="outline" size="lg" onClick={() => navigate("/about")}>
             Learn More About Us
           </Button>
         </div>
