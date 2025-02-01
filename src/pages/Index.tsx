@@ -3,6 +3,7 @@ import { FeaturedStories } from "@/components/FeaturedStories";
 import { Categories } from "@/components/Categories";
 import { AboutSection } from "@/components/AboutSection";
 import { JoinCTA } from "@/components/JoinCTA";
+import { LiveFeed } from "@/components/LiveFeed";
 
 const Index = () => {
   return (
@@ -10,6 +11,7 @@ const Index = () => {
       <Hero />
       <FeaturedStories />
       <Categories />
+      <LiveFeed />
       <AboutSection />
       <JoinCTA />
     </div>
