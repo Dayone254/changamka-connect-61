@@ -1,1 +1,4 @@
-
+#Changamka!
+With the slogan Changamka! Dare to Dream, Boldly Create, the platform is a dynamic online space that inspired people to showcase their passions talents. It invites people from all fields including artists, writers, coders, entrepreneurs and innovators, and provides the tools, visibility and community support needed to breath life into ideas.
+The mission is to inspire self-expression and drive meanignful change by providing a space where young minds can connect, collaborate, and thrive. Here you do not just share your work; you make your mark on the world.
+But Wait! How is this platform different from Youtube, Tiktok, Facebook, e.t.c.? Well, it is true that Changamka! Is similar to the social media platforms but with caveat. Changamka! Is loca, targetting local youths, thus creating a niche space that eliminates the saturation in other platforms. Most Importantly, the platform provides users with the ability to showcase their stuff, which in effect inspires them to bring their dreams to life, which in effect evokes them to practice and thus so become perfect; ni kuchangamka!
